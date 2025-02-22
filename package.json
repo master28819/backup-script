@@ -1,31 +1,31 @@
 {
   "name": "backup-script",
   "version": "1.0.0",
-  "main": "./backup/index.js",
+  "description": "A backup script for automating file backups.",
+  "main": "backup/index.js",
   "scripts": {
-    "start": "node ./backup/index.js",
-    "dev": "nodemon ./backup/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node backup/index.js",
+    "dev": "nodemon backup/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "description": "",
   "dependencies": {
+    "dotenv": "^16.0.3",
+    "fs-extra": "^11.1.1",
+    "node-cron": "^3.0.2",
     "dotenv": "^16.4.7",
     "mongodb": "^6.12.0",
     "mongoose": "^8.9.5",
     "mysql2": "^3.12.0",
     "pg": "^8.13.1",
     "postgres": "^3.4.5",
-    "sequelize": "^6.37.5",
-    "@testing-library/user-event": "^14.4.3"
+    "sequelize": "^6.37.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
   },
   "engines": {
     "node": "20.x"
   },
-  "devDependencies": {
-    "nodemon": "^3.1.9"
-  }
+  "keywords": ["backup", "automation", "nodejs"],
+  "author": "MASTER OF C",
+  "license": "MIT"
 }
