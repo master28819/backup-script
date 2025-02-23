@@ -3,7 +3,6 @@ const fs = require('fs');
 const pg = require('pg');
 const dotenv = require('dotenv');
 const utility = require('./utility');
-const { tab } = require('@testing-library/user-event/dist/tab');
 dotenv.config();
 
 const port = process.env.HOST ? process.env.PORT : 3000;
@@ -213,15 +212,15 @@ const server = http.createServer(
                         // await destinationConnection.query(
                         //     "delete from " + table.table_name,
                         //     (err, result) => {
-                        //         console.log(err ? err : result);
+                        //         console.log(err ? err : 'Deleted Successfully');
                         //     }
                         // );
 
 
                         // Way - 1 : Each Query Per Record
 
-                        // console.log("\n\n");
-                        // console.log("insert into " + table.table_name + fields + " values" + data + ";");
+                        console.log("\n\n");
+                        console.log("insert into " + table.table_name + fields + " values" + data + ";");
 
                         // await destinationConnection.query(
                         //     "insert into " + table.table_name + fields + " values" + data + ";",
@@ -242,7 +241,7 @@ const server = http.createServer(
 
                     }
                     // Way - 1 : Printing status
-                    // console.log(records.length === 0 ? `\n\nTable ${table.table_name} doesn't have any records\n\n` : '');
+                    console.log(records.length === 0 ? `\n\nTable ${table.table_name} doesn't have any records\n\n` : '');
 
                     // Way - 1 : appending about this table doesn't have any data.
 
@@ -291,19 +290,43 @@ const server = http.createServer(
 
                         console.log(`\n\nTable : ${table.replace(".txt", "")} \n`);
                         let data = await fs.readFileSync("./" + src_pgname + "/" + table, 'utf-8');
-                        console.log(
-                            data.includes(NO_DATA_FOUND)
-                                ? NO_DATA_FOUND
-                                : data
-                        );
+
+                        if (data.includes(NO_DATA_FOUND)) {
+                            console.log(`Table ${table.replace(".txt", "")} doesn't have any data`);
+                            // console.log(NO_DATA_FOUND);
+                        } else {
+
+                            let content = "";
+                            let fields = data.split("\n\n")[0];
+                            data = data.split("\n\n")[1];
+                            let records = data.split("\n");
+
+
+                            for (let record of records) {
+                                // for removing last extra line
+                                if (record !== "") {
+                                    content += record + ",\n";
+                                }
+                            }
+
+                            // 1 for a line and 2 nd for last comma
+                            content = content.substring(0, content.length - 2) + ";";
+                            console.log("insert into " + table.replace(".txt", "") + fields + " values \n" + content);
+
+                            destinationConnection.query(
+                                "insert into " + table.replace(".txt", "") + fields + " values \n" + content,
+                                (err, result) => {
+                                    console.log(err ? `Table ${table.replace(".txt", "")} has some issues` : `Table ${table.replace(".txt", "")} backup converted successfully`);
+                                }
+                            );
+
+                        }
 
                     } catch (err) {
                         console.log(`Error reading file ${table}`);
                     }
 
                 }
-
-
 
             }
 
@@ -320,7 +343,6 @@ const server = http.createServer(
             response.writeHead(object['code'], { 'Content-Type': 'application/json' });
             response.end(JSON.stringify(object));
         }
-
 
     }
 );
